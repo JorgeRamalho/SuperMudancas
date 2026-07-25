@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="SuperMudancas">
+  <defs>
+    <linearGradient id="smFavGrad" x1="2" y1="1" x2="30" y2="31" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E2433"/>
+      <stop offset="0.55" stop-color="#157A8C"/>
+      <stop offset="1" stop-color="#1A9AA8"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#smFavGrad)"/>
+  <path fill="#FFFFFF" d="M9 17.2 16 11l7 6.2V23a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 9 23v-5.8Z"/>
+  <path fill="none" stroke="#F0A202" stroke-width="2" stroke-linecap="round" d="M7 9c4-3 9-3 14 .5"/>
+  <path fill="#F0A202" d="M19.8 7.2 24 9.6l-3.4 2.6.6-2.3 2-.4-3.4-2.3Z"/>
+</svg>

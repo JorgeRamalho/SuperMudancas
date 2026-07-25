@@ -1,0 +1,80 @@
+/* SuperMudanças — tokens espelhados para o app React */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap");
+
+:root {
+  --ink: #0e2433;
+  --ink-soft: #3a5566;
+  --ocean: #157a8c;
+  --ocean-deep: #0f5c6b;
+  --ocean-bright: #1a9aa8;
+  --sand-mist: #e8eef2;
+  --surface: #f4f7f9;
+  --white: #ffffff;
+  --accent: #f0a202;
+  --accent-hover: #d89102;
+  --success: #1f8a5b;
+  --danger: #c23b3b;
+
+  --grad-brand: linear-gradient(145deg, #0e2433 0%, #157a8c 55%, #1a9aa8 100%);
+  --grad-page: linear-gradient(180deg, #dce8ee 0%, #f4f7f9 42%, #ffffff 100%);
+  --grad-cta: linear-gradient(120deg, #f0a202 0%, #f5b935 100%);
+
+  --font-display: "Syne", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+
+  --text-xs: 0.875rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+  --text-h2: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  --text-h1: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-soft: 0 12px 40px rgba(14, 36, 51, 0.08);
+  --max-w: 880px;
+  --transition: 220ms ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--grad-page);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+.brand {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

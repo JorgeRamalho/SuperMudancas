@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#157A8C" />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+    <title>Painel — SuperMudanças</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .admin-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: end;
+        margin-bottom: 1.5rem;
+      }
+      .admin-toolbar label {
+        display: grid;
+        gap: 0.35rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .admin-toolbar input {
+        min-width: 220px;
+        padding: 0.65rem 0.8rem;
+        border: 1px solid rgba(14, 36, 51, 0.16);
+        border-radius: 6px;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      .admin-table th,
+      .admin-table td {
+        text-align: left;
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px solid rgba(14, 36, 51, 0.1);
+        vertical-align: top;
+      }
+      .admin-table th {
+        font-family: Syne, sans-serif;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ink-soft);
+      }
+      .admin-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand-lockup" href="index.html" aria-label="SuperMudanças">
+          <svg class="brand-mark" viewBox="0 0 64 64" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="smMark6" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0E2433"/>
+                  <stop offset="0.55" stop-color="#157A8C"/>
+                  <stop offset="1" stop-color="#1A9AA8"/>
+                </linearGradient>
+              </defs>
+              <rect width="64" height="64" rx="16" fill="url(#smMark6)"/>
+              <path fill="#FFFFFF" d="M18 34.5 32 22l14 12.5V46a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3V34.5Z"/>
+              <path fill="#0E2433" opacity="0.18" d="M28 49h8v-9a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v9Z"/>
+              <path fill="none" stroke="#F0A202" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" d="M14 18c8-6 18-6 28 1"/>
+              <path fill="#F0A202" d="M40.2 14.4 48.5 19l-6.8 5.2 1.2-4.6 4.1-.8-6.8-4.4Z"/>
+            </svg>
+          <span class="brand">Super<span>Mudanças</span> Admin</span>
+        </a>
+        <a class="btn btn-ghost" href="index.html">Site</a>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <div class="section__head">
+          <h1 style="font-size: var(--text-h2)">Painel interno</h1>
+          <p>Visualize solicitações e mensagens de contato. Use o token de admin.</p>
+        </div>
+
+        <div class="admin-toolbar">
+          <label>
+            Token admin
+            <input type="password" id="admin-token" placeholder="supermudancas-admin" />
+          </label>
+          <button class="btn btn-primary" type="button" id="admin-load">Carregar</button>
+        </div>
+
+        <div class="admin-tabs">
+          <button class="coverage__chip is-active" type="button" data-admin-tab="solicitacoes">
+            Solicitações
+          </button>
+          <button class="coverage__chip" type="button" data-admin-tab="mensagens">
+            Mensagens
+          </button>
+        </div>
+
+        <p class="contact__feedback" id="admin-feedback" hidden></p>
+        <div id="admin-content"></div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var tokenInput = document.getElementById("admin-token");
+        var loadBtn = document.getElementById("admin-load");
+        var feedback = document.getElementById("admin-feedback");
+        var content = document.getElementById("admin-content");
+        var tab = "solicitacoes";
+        var saved = localStorage.getItem("sm_admin_token");
+        if (saved) tokenInput.value = saved;
+
+        document.querySelectorAll("[data-admin-tab]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll("[data-admin-tab]").forEach(function (b) {
+              b.classList.remove("is-active");
+            });
+            btn.classList.add("is-active");
+            tab = btn.getAttribute("data-admin-tab");
+            load();
+          });
+        });
+
+        async function load() {
+          var token = tokenInput.value.trim();
+          if (!token) {
+            feedback.hidden = false;
+            feedback.classList.add("is-error");
+            feedback.textContent = "Informe o token admin.";
+            return;
+          }
+          localStorage.setItem("sm_admin_token", token);
+          feedback.hidden = false;
+          feedback.classList.remove("is-error");
+          feedback.textContent = "Carregando…";
+          content.innerHTML = "";
+
+          try {
+            var endpoint =
+              tab === "mensagens" ? "/api/admin/mensagens" : "/api/admin/solicitacoes";
+            var response = await fetch(endpoint, {
+              headers: { "x-admin-token": token },
+            });
+            var data = await response.json();
+            if (!response.ok) throw new Error(data.message || "Falha ao carregar.");
+
+            feedback.hidden = true;
+            var items = data.items || [];
+            if (!items.length) {
+              content.innerHTML = "<p class='caption'>Nenhum registro ainda.</p>";
+              return;
+            }
+
+            if (tab === "mensagens") {
+              content.innerHTML =
+                "<table class='admin-table'><thead><tr>" +
+                "<th>Quando</th><th>Nome</th><th>Telefone</th><th>Mensagem</th>" +
+                "</tr></thead><tbody>" +
+                items
+                  .map(function (row) {
+                    return (
+                      "<tr><td>" +
+                      new Date(row.created_at).toLocaleString("pt-BR") +
+                      "</td><td>" +
+                      escapeHtml(row.nome) +
+                      "</td><td>" +
+                      escapeHtml(row.telefone) +
+                      "</td><td>" +
+                      escapeHtml(row.mensagem) +
+                      "</td></tr>"
+                    );
+                  })
+                  .join("") +
+                "</tbody></table>";
+              return;
+            }
+
+            content.innerHTML =
+              "<table class='admin-table'><thead><tr>" +
+              "<th>Protocolo</th><th>Cliente</th><th>Rota</th><th>Data</th><th>Serviço</th>" +
+              "</tr></thead><tbody>" +
+              items
+                .map(function (row) {
+                  return (
+                    "<tr><td><strong>" +
+                    escapeHtml(row.protocolo) +
+                    "</strong></td><td>" +
+                    escapeHtml(row.nome) +
+                    "<br><span class='caption'>" +
+                    escapeHtml(row.email) +
+                    "</span></td><td>" +
+                    escapeHtml(row.origem_cidade) +
+                    "/" +
+                    escapeHtml(row.origem_uf) +
+                    " → " +
+                    escapeHtml(row.destino_cidade) +
+                    "/" +
+                    escapeHtml(row.destino_uf) +
+                    "</td><td>" +
+                    escapeHtml(row.data_preferida) +
+                    "</td><td>" +
+                    escapeHtml(row.tipo_servico) +
+                    " · " +
+                    escapeHtml(row.porte) +
+                    "</td></tr>"
+                  );
+                })
+                .join("") +
+              "</tbody></table>";
+          } catch (error) {
+            feedback.classList.add("is-error");
+            feedback.textContent = error.message || "Erro ao carregar.";
+          }
+        }
+
+        function escapeHtml(value) {
+          return String(value == null ? "" : value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        loadBtn.addEventListener("click", load);
+      })();
+    </script>
+  </body>
+</html>

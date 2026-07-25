@@ -1,0 +1,5 @@
+{
+  "liveServer.settings.root": "/web",
+  "liveServer.settings.mount": [["/cadastro", "/client/dist"]],
+  "liveServer.settings.donotShowInfoMsg": true
+}

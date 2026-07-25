@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: supermudancas-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: supermudancas
+      POSTGRES_PASSWORD: supermudancas
+      POSTGRES_DB: supermudancas
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./api/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supermudancas -d supermudancas"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: supermudancas-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://supermudancas:supermudancas@db:5432/supermudancas
+      ADMIN_TOKEN: supermudancas-admin
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+client/dist/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+api/.env
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Data
+pgdata/
+
+# Local tooling
+.cursor/
+agent-tools/
