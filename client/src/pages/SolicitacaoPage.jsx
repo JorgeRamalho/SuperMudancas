@@ -58,7 +58,9 @@ export default function SolicitacaoPage() {
         item === "Itens especiais" ||
         item === "Guarda-móveis temporário" ||
         item === "Mudança noturna" ||
-        item === "Seguro reforçado"
+        item === "Seguro reforçado" ||
+        item === "Equipe reforçada" ||
+        item === "Acesso especial / elevador"
     );
     if (especiais.length) next.itens_especiais = especiais.join(", ");
     return next;

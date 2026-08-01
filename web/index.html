@@ -51,13 +51,10 @@
           <span></span>
         </button>
         <ul class="nav-links" id="nav-menu">
-          <li><a href="#como-funciona">Como funciona</a></li>
           <li><a href="#servicos">Serviços</a></li>
           <li><a href="#galeria">Galeria</a></li>
-          <li><a href="#antes-depois">Antes e depois</a></li>
-          <li><a href="#opcoes">Opções</a></li>
+          <li><a href="#orcamento">Orçamento</a></li>
           <li><a href="#cobertura">Cobertura</a></li>
-          <li><a href="#depoimentos">Depoimentos</a></li>
           <li><a href="#faq">FAQ</a></li>
           <li><a href="#contato">Contato</a></li>
           <li><a href="consulta.html">Protocolo</a></li>
@@ -71,24 +68,11 @@
 
     <main id="topo">
       <section class="hero" aria-label="Apresentação">
-        <div class="hero__media" aria-hidden="true">
-          <video
-            class="hero__video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            poster="assets/images/hero-moving.jpg"
-            data-hero-video
-          >
-            <source
-              src="https://assets.mixkit.co/videos/42127/42127-720.mp4"
-              type="video/mp4"
-            />
-          </video>
-          <div class="hero__fallback"></div>
-        </div>
+        <div
+          class="hero__media"
+          role="img"
+          aria-label="Caminhão de mudança e equipe carregando móveis e caixas"
+        ></div>
         <div class="container hero__content">
           <p class="hero__brand">
             <svg class="hero__mark" viewBox="0 0 64 64" width="52" height="52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -119,7 +103,7 @@
         </div>
       </section>
 
-      <section class="section" id="como-funciona">
+      <section class="section section--band" id="como-funciona">
         <div class="container">
           <div class="section__head reveal">
             <h2>Como funciona</h2>
@@ -310,7 +294,7 @@
         </div>
       </section>
 
-      <section class="section section--flush" id="galeria">
+      <section class="section section--flush section--band" id="galeria">
         <div class="container">
           <div class="section__head reveal">
             <h2>Galeria da operação</h2>
@@ -326,8 +310,8 @@
                 <figcaption>Organização por cômodo</figcaption>
               </figure>
               <figure class="carousel__slide">
-                <img src="assets/images/gallery-02.jpg" alt="Proteção de móveis com coberturas" />
-                <figcaption>Proteção de móveis</figcaption>
+                <img src="assets/images/gallery-02.jpg" alt="Embalagem profissional de caixas para mudança" />
+                <figcaption>Embalagem profissional</figcaption>
               </figure>
               <figure class="carousel__slide">
                 <img src="assets/images/gallery-03.jpg" alt="Equipe carregando itens com atenção" />
@@ -355,7 +339,7 @@
         </div>
       </section>
 
-      <section class="section" id="antes-depois">
+      <section class="section section--band" id="antes-depois">
         <div class="container">
           <div class="section__head reveal">
             <h2>Antes e depois</h2>
@@ -407,10 +391,10 @@
         </div>
       </section>
 
-      <section class="section" id="opcoes">
+      <section class="section section--band-accent" id="orcamento">
         <div class="container">
           <div class="section__head reveal">
-            <h2>Monte suas opções</h2>
+            <h2>Monte seu orçamento</h2>
             <p>
               Marque o que precisa. O resumo atualiza na hora — e você leva essa
               escolha para o formulário de orçamento.
@@ -461,6 +445,20 @@
                   <span>Cobertura ampliada para bens de maior valor</span>
                 </span>
               </label>
+              <label class="option">
+                <input type="checkbox" name="extra" value="Equipe reforçada" data-extra />
+                <span class="option__body">
+                  <strong>Equipe reforçada</strong>
+                  <span>Mais profissionais para mudanças grandes ou com prazo curto</span>
+                </span>
+              </label>
+              <label class="option">
+                <input type="checkbox" name="extra" value="Acesso especial / elevador" data-extra />
+                <span class="option__body">
+                  <strong>Acesso especial</strong>
+                  <span>Elevador de carga, escadas longas ou restrição de horário</span>
+                </span>
+              </label>
             </div>
 
             <aside class="options__summary" aria-live="polite">
@@ -485,7 +483,7 @@
           </div>
 
           <div class="coverage reveal" data-coverage>
-            <div class="coverage__filters" role="tablist" aria-label="Regiões">
+            <div class="coverage__filters" aria-label="Filtrar regiões">
               <button class="coverage__chip is-active" type="button" data-region="todas">
                 Todas
               </button>
@@ -519,15 +517,20 @@
 
             <div class="coverage__map">
               <iframe
+                data-coverage-map
                 title="Mapa de cobertura SuperMudanças — Grande São Paulo"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
                 src="https://www.openstreetmap.org/export/embed.html?bbox=-47.05%2C-24.05%2C-46.25%2C-23.25&amp;layer=mapnik&amp;marker=-23.5505%2C-46.6333"
               ></iframe>
               <p class="caption coverage__map-note">
-                Base em São Paulo · atendimento Capital, ABC, Litoral e Interior
+                <span data-coverage-label
+                  >Base em São Paulo · atendimento Capital, ABC, Litoral e
+                  Interior</span
+                >
                 ·
                 <a
+                  data-coverage-link
                   href="https://www.openstreetmap.org/?mlat=-23.5505&amp;mlon=-46.6333#map=10/-23.5505/-46.6333"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -539,7 +542,7 @@
         </div>
       </section>
 
-      <section class="section" id="depoimentos">
+      <section class="section section--band" id="depoimentos">
         <div class="container">
           <div class="section__head reveal">
             <h2>Quem já mudou conosco</h2>
@@ -638,7 +641,7 @@
         </div>
       </section>
 
-      <section class="section" id="contato">
+      <section class="section section--band" id="contato">
         <div class="container">
           <div class="section__head reveal">
             <h2>Fale com a gente</h2>
@@ -716,7 +719,7 @@
         </div>
       </section>
 
-      <section class="cta-band" id="orcamento">
+      <section class="cta-band" id="cta-final">
         <div class="container reveal">
           <div>
             <svg class="cta-band__mark" viewBox="0 0 64 64" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -816,7 +819,12 @@
       rel="noopener noreferrer"
       aria-label="Abrir WhatsApp"
     >
-      WhatsApp
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false">
+        <path
+          fill="currentColor"
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
     </a>
 
     <button class="to-top" type="button" data-to-top aria-label="Voltar ao topo" hidden>

@@ -116,7 +116,20 @@
     let index = slides.findIndex((slide) => slide.classList.contains("is-active"));
     if (index < 0) index = 0;
     let timer = null;
-    const autoplay = root.dataset.carousel === "gallery" && !reduceMotion;
+    const isGallery = root.dataset.carousel === "gallery";
+    const autoplay = isGallery && !reduceMotion;
+
+    if (!root.hasAttribute("tabindex")) root.setAttribute("tabindex", "0");
+    root.setAttribute("aria-roledescription", "carrossel");
+
+    let live = root.querySelector("[data-carousel-live]");
+    if (!live) {
+      live = document.createElement("p");
+      live.className = "visually-hidden";
+      live.setAttribute("aria-live", "polite");
+      live.setAttribute("data-carousel-live", "");
+      root.appendChild(live);
+    }
 
     slides.forEach((_, i) => {
       const dot = document.createElement("button");
@@ -133,6 +146,10 @@
       track.style.transform = "translateX(-" + index * 100 + "%)";
       slides.forEach((slide, i) => slide.classList.toggle("is-active", i === index));
       dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
+      const caption = slides[index]?.querySelector("figcaption")?.textContent;
+      const quote = slides[index]?.querySelector("p")?.textContent;
+      live.textContent =
+        "Slide " + (index + 1) + " de " + slides.length + (caption || quote ? ": " + (caption || quote) : "");
     }
 
     function goTo(i) {
@@ -149,6 +166,17 @@
 
     prev?.addEventListener("click", () => goTo(index - 1));
     next?.addEventListener("click", () => goTo(index + 1));
+
+    root.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goTo(index - 1);
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goTo(index + 1);
+      }
+    });
 
     let startX = 0;
     track.addEventListener(
@@ -168,6 +196,28 @@
       { passive: true }
     );
 
+    if (isGallery) {
+      slides.forEach((slide, i) => {
+        const img = slide.querySelector("img");
+        if (!img) return;
+        slide.classList.add("carousel__slide--zoom");
+        slide.setAttribute("role", "button");
+        slide.setAttribute("tabindex", "0");
+        slide.setAttribute(
+          "aria-label",
+          "Ampliar: " + (slide.querySelector("figcaption")?.textContent || img.alt || "imagem")
+        );
+        const open = () => openLightbox(img.src, img.alt, i, slides);
+        slide.addEventListener("click", open);
+        slide.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            open();
+          }
+        });
+      });
+    }
+
     root.addEventListener("mouseenter", () => clearInterval(timer));
     root.addEventListener("mouseleave", restart);
     root.addEventListener("focusin", () => clearInterval(timer));
@@ -178,6 +228,78 @@
   }
 
   document.querySelectorAll("[data-carousel]").forEach(initCarousel);
+
+  /* —— Lightbox da galeria —— */
+  let lightbox = null;
+  let lightboxState = { slides: [], index: 0 };
+
+  function ensureLightbox() {
+    if (lightbox) return lightbox;
+    lightbox = document.createElement("div");
+    lightbox.className = "lightbox";
+    lightbox.hidden = true;
+    lightbox.innerHTML =
+      '<div class="lightbox__backdrop" data-lightbox-close></div>' +
+      '<div class="lightbox__dialog" role="dialog" aria-modal="true" aria-label="Imagem ampliada">' +
+      '<button type="button" class="lightbox__close" data-lightbox-close aria-label="Fechar">×</button>' +
+      '<button type="button" class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="Anterior">‹</button>' +
+      '<figure class="lightbox__figure">' +
+      '<img data-lightbox-img alt="" />' +
+      '<figcaption data-lightbox-caption></figcaption>' +
+      "</figure>" +
+      '<button type="button" class="lightbox__nav lightbox__nav--next" data-lightbox-next aria-label="Próxima">›</button>' +
+      "</div>";
+    document.body.appendChild(lightbox);
+
+    lightbox.querySelectorAll("[data-lightbox-close]").forEach((el) => {
+      el.addEventListener("click", closeLightbox);
+    });
+    lightbox.querySelector("[data-lightbox-prev]")?.addEventListener("click", () => {
+      showLightboxSlide(lightboxState.index - 1);
+    });
+    lightbox.querySelector("[data-lightbox-next]")?.addEventListener("click", () => {
+      showLightboxSlide(lightboxState.index + 1);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (lightbox.hidden) return;
+      if (event.key === "Escape") closeLightbox();
+      if (event.key === "ArrowLeft") showLightboxSlide(lightboxState.index - 1);
+      if (event.key === "ArrowRight") showLightboxSlide(lightboxState.index + 1);
+    });
+    return lightbox;
+  }
+
+  function showLightboxSlide(i) {
+    const { slides } = lightboxState;
+    if (!slides.length) return;
+    lightboxState.index = (i + slides.length) % slides.length;
+    const slide = slides[lightboxState.index];
+    const img = slide.querySelector("img");
+    const caption = slide.querySelector("figcaption")?.textContent || "";
+    const box = ensureLightbox();
+    const target = box.querySelector("[data-lightbox-img]");
+    const cap = box.querySelector("[data-lightbox-caption]");
+    if (target && img) {
+      target.src = img.src;
+      target.alt = img.alt || caption;
+    }
+    if (cap) cap.textContent = caption;
+  }
+
+  function openLightbox(src, alt, index, slides) {
+    lightboxState = { slides: slides || [], index: index || 0 };
+    const box = ensureLightbox();
+    showLightboxSlide(lightboxState.index);
+    box.hidden = false;
+    document.body.classList.add("is-lightbox-open");
+    box.querySelector(".lightbox__close")?.focus();
+  }
+
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.hidden = true;
+    document.body.classList.remove("is-lightbox-open");
+  }
 
   /* —— Opções / resumo —— */
   const optionsRoot = document.querySelector("[data-options]");
@@ -225,17 +347,81 @@
   if (coverage) {
     const chips = coverage.querySelectorAll("[data-region]");
     const cities = coverage.querySelectorAll(".coverage__cities li");
+    const mapFrame = coverage.querySelector("[data-coverage-map]");
+    const mapLabel = coverage.querySelector("[data-coverage-label]");
+    const mapLink = coverage.querySelector("[data-coverage-link]");
+
+    const maps = {
+      todas: {
+        bbox: "-47.05,-24.05,-46.25,-23.25",
+        marker: "-23.5505,-46.6333",
+        zoom: 10,
+        label: "Base em São Paulo · atendimento Capital, ABC, Litoral e Interior",
+      },
+      capital: {
+        bbox: "-46.82,-23.72,-46.45,-23.42",
+        marker: "-23.5505,-46.6333",
+        zoom: 11,
+        label: "Capital · São Paulo, Guarulhos e Osasco",
+      },
+      abc: {
+        bbox: "-46.62,-23.75,-46.42,-23.55",
+        marker: "-23.6639,-46.5383",
+        zoom: 12,
+        label: "ABC · Santo André, São Bernardo e São Caetano",
+      },
+      litoral: {
+        bbox: "-46.45,-24.10,-46.20,-23.90",
+        marker: "-23.9608,-46.3336",
+        zoom: 11,
+        label: "Litoral · Santos, Guarujá e Praia Grande",
+      },
+      interior: {
+        bbox: "-47.25,-23.10,-46.85,-22.75",
+        marker: "-22.9099,-47.0626",
+        zoom: 10,
+        label: "Interior · Campinas, Jundiaí e Sorocaba",
+      },
+    };
+
+    function applyRegion(region) {
+      cities.forEach((city) => {
+        const match = region === "todas" || city.dataset.regions === region;
+        city.classList.toggle("is-dimmed", !match);
+        city.classList.toggle("is-hot", match && region !== "todas");
+      });
+
+      const map = maps[region] || maps.todas;
+      const [lat, lon] = map.marker.split(",");
+      if (mapFrame) {
+        mapFrame.src =
+          "https://www.openstreetmap.org/export/embed.html?bbox=" +
+          encodeURIComponent(map.bbox) +
+          "&layer=mapnik&marker=" +
+          encodeURIComponent(map.marker);
+        mapFrame.title = "Mapa de cobertura SuperMudanças — " + region;
+      }
+      if (mapLabel) mapLabel.textContent = map.label;
+      if (mapLink) {
+        mapLink.href =
+          "https://www.openstreetmap.org/?mlat=" +
+          lat +
+          "&mlon=" +
+          lon +
+          "#map=" +
+          map.zoom +
+          "/" +
+          lat +
+          "/" +
+          lon;
+      }
+    }
 
     chips.forEach((chip) => {
       chip.addEventListener("click", () => {
         chips.forEach((c) => c.classList.remove("is-active"));
         chip.classList.add("is-active");
-        const region = chip.dataset.region;
-        cities.forEach((city) => {
-          const match = region === "todas" || city.dataset.regions === region;
-          city.classList.toggle("is-dimmed", !match);
-          city.classList.toggle("is-hot", match && region !== "todas");
-        });
+        applyRegion(chip.dataset.region || "todas");
       });
     });
   }
@@ -265,27 +451,6 @@
     toTop.addEventListener("click", () => {
       window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
     });
-  }
-
-  /* —— Hero video —— */
-  const heroMedia = document.querySelector(".hero__media");
-  const heroVideo = document.querySelector("[data-hero-video]");
-  if (heroMedia && heroVideo) {
-    if (reduceMotion) {
-      heroVideo.removeAttribute("autoplay");
-      heroVideo.pause();
-    } else {
-      const markReady = () => heroMedia.classList.add("is-video-ready");
-      heroVideo.addEventListener("loadeddata", markReady, { once: true });
-      heroVideo.addEventListener("canplay", markReady, { once: true });
-      heroVideo.addEventListener("error", () => {
-        heroMedia.classList.remove("is-video-ready");
-      });
-      const playPromise = heroVideo.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => heroMedia.classList.remove("is-video-ready"));
-      }
-    }
   }
 
   /* —— Antes e depois —— */
@@ -392,9 +557,18 @@
       } catch (error) {
         if (feedback) {
           feedback.classList.add("is-error");
-          feedback.textContent =
-            (error && error.message) ||
-            "API indisponível. Use o WhatsApp ao lado ou suba o servidor.";
+          feedback.innerHTML =
+            "Não foi possível enviar pelo site agora. " +
+            '<a href="https://wa.me/551140001234?text=' +
+            encodeURIComponent(
+              "Olá! Quero um orçamento. Nome: " +
+                payload.nome +
+                ". Tel: " +
+                payload.telefone +
+                ". " +
+                payload.mensagem
+            ) +
+            '" target="_blank" rel="noopener noreferrer">Continuar no WhatsApp</a>.';
         }
       }
     });
