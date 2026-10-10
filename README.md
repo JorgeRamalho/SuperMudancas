@@ -2,7 +2,7 @@
 
 🌐 ## Site Link do projeto online: https://supermudancas.vercel.app/web/index.html
 
-📂 ## Repositório: https://github.com//JorgeRamalho/SuperMudanças
+📂 ## Repositório: https://github.com//JorgeRamalho/SuperMudancas
 
 💻 ## Tecnologias
 
